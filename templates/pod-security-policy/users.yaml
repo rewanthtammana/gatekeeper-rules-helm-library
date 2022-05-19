@@ -1,0 +1,94 @@
+{{- if .Values.K8sPSPAllowedUsers -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPAllowedUsers
+metadata:
+  name: psp-pods-allowed-user-ranges
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPAllowedUsers}}
+    {{- if or (.Values.K8sPSPAllowedUsers.includeNamespaces) (hasKey .Values.K8sPSPAllowedUsers "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPAllowedUsers "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPAllowedUsers.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPAllowedUsers.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPAllowedUsers.excludeNamespaces) (hasKey .Values.K8sPSPAllowedUsers "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPAllowedUsers "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPAllowedUsers.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPAllowedUsers.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPAllowedUsers.scope}}
+    scope: {{.Values.K8sPSPAllowedUsers.scope | quote -}}
+    {{end -}}
+    {{end}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- with .Values.K8sPSPAllowedUsers.parameters }}
+  {{- if or (hasKey . "runAsUser") (hasKey . "runAsGroup") (hasKey . "supplementalGroups") (hasKey . "fsGroup")}}
+  parameters:
+    {{- if hasKey . "runAsUser"}}
+    runAsUser:
+      rule: {{.runAsUser.rule | quote }}
+      ranges:
+      {{- range .runAsUser.ranges}}
+      - min: {{ .min }} #TBC
+        max: {{ .max }}{{end -}}
+    {{end}}
+    {{- if hasKey . "runAsGroup"}}
+    runAsGroup:
+      rule: {{.runAsGroup.rule | quote }}
+      ranges:
+      {{- range .runAsGroup.ranges}}
+      - min: {{ .min }} #TBC
+        max: {{ .max }}{{end -}}
+    {{end}}
+    {{- if hasKey . "supplementalGroups"}}
+    supplementalGroups:
+      rule: {{.supplementalGroups.rule | quote }}
+      ranges:
+      {{- range .supplementalGroups.ranges}}
+      - min: {{ .min }} #TBC
+        max: {{ .max }}{{end -}}
+    {{end}}
+    {{- if hasKey . "fsGroup"}}
+    fsGroup:
+      rule: {{.fsGroup.rule | quote }}
+      ranges:
+      {{- range .fsGroup.ranges}}
+      - min: {{ .min }} #TBC
+        max: {{ .max }}{{end -}}
+    {{end}}
+  {{end}}
+  {{end -}}
+{{- end -}}

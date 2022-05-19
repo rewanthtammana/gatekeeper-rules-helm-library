@@ -1,0 +1,56 @@
+{{- if .Values.K8sPSPAllowPrivilegeEscalationContainer -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPAllowPrivilegeEscalationContainer
+metadata:
+  name: psp-allow-privilege-escalation-containers
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer}}
+    {{- if or (.Values.K8sPSPAllowPrivilegeEscalationContainer.includeNamespaces) (hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPAllowPrivilegeEscalationContainer.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPCapabilities.excludeNamespaces) (hasKey .Values.K8sPSPCapabilities "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPAllowPrivilegeEscalationContainer.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer.scope}}
+    scope: {{.Values.K8sPSPAllowPrivilegeEscalationContainer.scope | quote -}}
+    {{end -}}
+    {{end -}}
+{{- end -}}

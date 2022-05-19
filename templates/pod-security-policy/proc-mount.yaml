@@ -1,0 +1,58 @@
+{{- if .Values.K8sPSPProcMount -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPProcMount
+metadata:
+  name: psp-proc-mount
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPProcMount}}
+    {{- if or (.Values.K8sPSPProcMount.includeNamespaces) (hasKey .Values.K8sPSPProcMount "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPProcMount "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPProcMount.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPProcMount.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPProcMount.excludeNamespaces) (hasKey .Values.K8sPSPProcMount "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPProcMount "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPProcMount.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPProcMount.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPProcMount.scope}}
+    scope: {{.Values.K8sPSPProcMount.scope | quote -}}
+    {{end -}}
+    {{end}}
+  parameters:
+    procMount: {{.Values.K8sPSPProcMount.procMount}}
+{{- end -}}

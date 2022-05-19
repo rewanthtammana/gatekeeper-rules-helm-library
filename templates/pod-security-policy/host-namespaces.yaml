@@ -1,0 +1,56 @@
+{{- if .Values.K8sPSPHostNamespace -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPHostNamespace
+metadata:
+  name: psp-host-namespace
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPHostNamespace}}
+    {{- if or (.Values.K8sPSPHostNamespace.includeNamespaces) (hasKey .Values.K8sPSPHostNamespace "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPHostNamespace "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPHostNamespace.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPHostNamespace.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPHostNamespace.excludeNamespaces) (hasKey .Values.K8sPSPHostNamespace "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPHostNamespace "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPHostNamespace.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPHostNamespace.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPHostNamespace.scope}}
+    scope: {{.Values.K8sPSPHostNamespace.scope | quote -}}
+    {{end -}}
+    {{end}}
+{{- end -}}

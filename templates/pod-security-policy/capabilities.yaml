@@ -1,0 +1,80 @@
+{{- if .Values.K8sPSPCapabilities -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPCapabilities
+metadata:
+  name: capabilities-demo
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPCapabilities}}
+    {{- if or (.Values.K8sPSPCapabilities.includeNamespaces) (hasKey .Values.K8sPSPCapabilities "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPCapabilities "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPCapabilities.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPCapabilities.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPCapabilities.excludeNamespaces) (hasKey .Values.K8sPSPCapabilities "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPCapabilities "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPCapabilities.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPCapabilities.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPCapabilities.scope}}
+    scope: {{.Values.K8sPSPCapabilities.scope | quote -}}
+    {{end -}}
+    {{end -}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- if .Values.K8sPSPCapabilities}}
+  {{- if .Values.K8sPSPCapabilities.parameters}}
+  parameters:
+    {{- if .Values.K8sPSPCapabilities.parameters.allowedCapabilities}}
+    allowedCapabilities:
+    {{- range .Values.K8sPSPCapabilities.parameters.allowedCapabilities}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- if .Values.K8sPSPCapabilities.parameters.requiredDropCapabilities}}
+    requiredDropCapabilities:
+    {{- range .Values.K8sPSPCapabilities.parameters.requiredDropCapabilities}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- if .Values.K8sPSPCapabilities.parameters.exemptImages}}
+    exemptImages:
+    {{- range .Values.K8sPSPCapabilities.parameters.exemptImages}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+  {{end -}}
+  {{end -}}
+{{- end -}}

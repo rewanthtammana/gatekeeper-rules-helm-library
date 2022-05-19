@@ -1,0 +1,65 @@
+{{- if .Values.K8sPSPHostFilesystem -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPHostFilesystem
+metadata:
+  name: psp-host-filesystem
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPHostFilesystem}}
+    {{- if or (.Values.K8sPSPHostFilesystem.includeNamespaces) (hasKey .Values.K8sPSPHostFilesystem "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPHostFilesystem "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPHostFilesystem.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPHostFilesystem.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPHostFilesystem.excludeNamespaces) (hasKey .Values.K8sPSPHostFilesystem "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPHostFilesystem "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPHostFilesystem.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPHostFilesystem.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPHostFilesystem.scope}}
+    scope: {{.Values.K8sPSPHostFilesystem.scope | quote -}}
+    {{end -}}
+    {{end}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- if .Values.K8sPSPHostFilesystem.parameters.allowedHostPaths}}
+  parameters:
+    allowedHostPaths:
+    {{- range .Values.K8sPSPHostFilesystem.parameters.allowedHostPaths}}
+      - readOnly: {{ .readOnly }}
+        pathPrefix: {{ .pathPrefix | quote -}}
+    {{end -}}
+  {{end}}
+{{- end -}}

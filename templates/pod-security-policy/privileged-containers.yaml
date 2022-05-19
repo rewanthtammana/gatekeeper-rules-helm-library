@@ -1,0 +1,64 @@
+{{- if .Values.K8sPSPPrivilegedContainer -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPPrivilegedContainer
+metadata:
+  name: psp-privileged-container
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPPrivilegedContainer}}
+    {{- if or (.Values.K8sPSPPrivilegedContainer.includeNamespaces) (hasKey .Values.K8sPSPPrivilegedContainer "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPPrivilegedContainer "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPPrivilegedContainer.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPPrivilegedContainer.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPPrivilegedContainer.excludeNamespaces) (hasKey .Values.K8sPSPPrivilegedContainer "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPPrivilegedContainer "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPPrivilegedContainer.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPPrivilegedContainer.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPPrivilegedContainer.scope}}
+    scope: {{.Values.K8sPSPPrivilegedContainer.scope | quote -}}
+    {{end -}}
+    {{end}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- if hasKey .Values.K8sPSPPrivilegedContainer.parameters "exemptImages"}}
+  parameters:
+    exemptImages:
+    {{- range .Values.K8sPSPPrivilegedContainer.parameters.exemptImages}}
+      - {{. | quote -}}
+    {{end -}}
+  {{ end }}
+{{- end -}}

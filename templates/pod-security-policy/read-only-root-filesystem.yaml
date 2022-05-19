@@ -1,0 +1,64 @@
+{{- if .Values.K8sPSPReadOnlyRootFilesystem -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPReadOnlyRootFilesystem
+metadata:
+  name: psp-readonlyrootfilesystem
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPReadOnlyRootFilesystem}}
+    {{- if or (.Values.K8sPSPReadOnlyRootFilesystem.includeNamespaces) (hasKey .Values.K8sPSPReadOnlyRootFilesystem "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPReadOnlyRootFilesystem "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPReadOnlyRootFilesystem.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPReadOnlyRootFilesystem.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPReadOnlyRootFilesystem.excludeNamespaces) (hasKey .Values.K8sPSPReadOnlyRootFilesystem "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPReadOnlyRootFilesystem "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPReadOnlyRootFilesystem.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPReadOnlyRootFilesystem.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPReadOnlyRootFilesystem.scope}}
+    scope: {{.Values.K8sPSPReadOnlyRootFilesystem.scope | quote -}}
+    {{end -}}
+    {{end}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- if hasKey .Values.K8sPSPReadOnlyRootFilesystem.parameters "exemptImages"}}
+  parameters:
+    exemptImages:
+    {{- range .Values.K8sPSPReadOnlyRootFilesystem.parameters.exemptImages}}
+      - {{. | quote -}}
+    {{end -}}
+  {{ end }}
+{{- end -}}

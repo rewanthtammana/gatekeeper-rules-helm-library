@@ -1,0 +1,68 @@
+{{- if .Values.K8sPSPForbiddenSysctls -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPForbiddenSysctls
+metadata:
+  name: psp-forbidden-sysctls
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPForbiddenSysctls}}
+    {{- if or (.Values.K8sPSPForbiddenSysctls.includeNamespaces) (hasKey .Values.K8sPSPForbiddenSysctls "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPForbiddenSysctls "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPForbiddenSysctls.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPForbiddenSysctls.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPForbiddenSysctls.excludeNamespaces) (hasKey .Values.K8sPSPForbiddenSysctls "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPForbiddenSysctls "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPForbiddenSysctls.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPForbiddenSysctls.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPForbiddenSysctls.scope}}
+    scope: {{.Values.K8sPSPForbiddenSysctls.scope | quote -}}
+    {{end -}}
+    {{end -}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- if .Values.K8sPSPForbiddenSysctls}}
+  {{- if .Values.K8sPSPForbiddenSysctls.parameters}}
+  {{- if .Values.K8sPSPForbiddenSysctls.parameters.forbiddenSysctls}}
+  parameters:
+    forbiddenSysctls:
+    {{- range .Values.K8sPSPForbiddenSysctls.parameters.forbiddenSysctls}}
+    - {{. | quote -}}
+    {{end -}}
+  {{end}}
+  {{end}}
+  {{end}}
+{{- end -}}

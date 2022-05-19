@@ -1,0 +1,65 @@
+{{- if .Values.K8sPSPHostNetworkingPorts -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPHostNetworkingPorts
+metadata:
+  name: psp-host-network-ports
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPHostNetworkingPorts}}
+    {{- if or (.Values.K8sPSPHostNetworkingPorts.includeNamespaces) (hasKey .Values.K8sPSPHostNetworkingPorts "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPHostNetworkingPorts "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPHostNetworkingPorts.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPHostNetworkingPorts.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPHostNetworkingPorts.excludeNamespaces) (hasKey .Values.K8sPSPHostNetworkingPorts "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPHostNetworkingPorts "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPHostNetworkingPorts.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPHostNetworkingPorts.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPHostNetworkingPorts.scope}}
+    scope: {{.Values.K8sPSPHostNetworkingPorts.scope | quote -}}
+    {{end -}}
+    {{end}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- if and (.Values.K8sPSPHostNetworkingPorts.parameters.hostNetwork | quote) (.Values.K8sPSPHostNetworkingPorts.parameters.min) (.Values.K8sPSPHostNetworkingPorts.parameters.max)}}
+  parameters:
+    hostNetwork: {{.Values.K8sPSPHostNetworkingPorts.parameters.hostNetwork}}
+    min: {{.Values.K8sPSPHostNetworkingPorts.parameters.min}}
+    max: {{.Values.K8sPSPHostNetworkingPorts.parameters.max}}
+  {{- else }}
+  {{- fail "K8sPSPHostNetworkingPorts parameters must have hostNetwork, min & max ranges" }}
+  {{end}}
+{{- end -}}

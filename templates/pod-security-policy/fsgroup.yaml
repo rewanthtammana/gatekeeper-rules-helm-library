@@ -1,0 +1,72 @@
+{{- if .Values.K8sPSPFSGroup -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPFSGroup
+metadata:
+  name: psp-fsgroup
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    {{- /* Check if any custom values are defined */ -}}
+    {{- if .Values.K8sPSPFSGroup}}
+    {{- if or (.Values.K8sPSPFSGroup.includeNamespaces) (hasKey .Values.K8sPSPFSGroup "includeGlobalNamespacesFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPFSGroup "includeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPFSGroup.includeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPFSGroup.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if excludeNamespaces are defined */ -}}
+    {{- if or (.Values.K8sPSPFSGroup.excludeNamespaces) (hasKey .Values.K8sPSPFSGroup "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPSPFSGroup "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPSPFSGroup.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPSPFSGroup.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPSPFSGroup.scope}}
+    scope: {{.Values.K8sPSPFSGroup.scope | quote -}}
+    {{end -}}
+    {{end}}
+  {{- /* Check if any custom values are defined */ -}}
+  {{- if and (.Values.K8sPSPFSGroup.parameters.rule) (hasKey .Values.K8sPSPFSGroup.parameters "ranges")}}
+  parameters:
+    {{/* Rule takes only "MustRunAs", "MayRunAs", "RunAsAny" */ -}}
+    {{- if or (eq .Values.K8sPSPFSGroup.parameters.rule "MustRunAs") (eq .Values.K8sPSPFSGroup.parameters.rule "MayRunAs") (eq .Values.K8sPSPFSGroup.parameters.rule "RunAsAny")}}
+    rule: {{.Values.K8sPSPFSGroup.parameters.rule | quote }}
+    ranges:
+    {{- range .Values.K8sPSPFSGroup.parameters.ranges}}
+    - min: {{ .min }} #TBC
+      max: {{ .max }}{{end -}}
+    {{- else }}
+    {{- fail "K8sPSPFSGroup rule takes only MustRunAs, MayRunAs, RunAsAny" }}
+    {{end}}
+  {{- else }}
+  {{- fail "K8sPSPFSGroup parameters should have rule, min & max ranges" }}
+  {{end -}}
+{{- end -}}
