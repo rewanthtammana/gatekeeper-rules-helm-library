@@ -1,0 +1,233 @@
+# Default values for helm-test.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+globalImport:
+  includeNamespaces:
+    - "inamespace1"
+    - "inamespace2"
+    - "first"
+    - "second"
+  excludeNamespaces:
+    - "enamespace1"
+    - "enamespace2"
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+
+# Sample structure
+
+# K8sPSPAllowPrivilegeEscalationContainer:
+#   globalImport:
+#     includeNamespacesFlag: false (defaults true)
+#     excludeNamespacesFlag: false (defaults false)
+#   includeNamespaces:
+#     - "default"
+#     - "wowowowow"
+#   excludeNamespaces:
+#     - "aa"
+#   scope: "Cluster"
+
+
+K8sPSPAllowPrivilegeEscalationContainer:
+  includeGlobalNamespacesFlag: false
+  excludeGlobalNamespacesFlag: false
+  includeNamespaces:
+    - "default"
+    - "wowowowow"
+  excludeNamespaces:
+    - "aa"
+  scope: "Cluster"
+
+K8sPSPCapabilities:
+  includeGlobalNamespacesFlag: false
+  excludeGlobalNamespacesFlag: true
+  includeNamespaces:
+    - "default"
+    - "wowowowow"
+  excludeNamespaces:
+    - "aa"
+  scope: "Cluster"
+  parameters:
+    allowedCapabilities:
+    - "hello"
+    requiredDropCapabilities:
+    - "KILL"
+    - "MKNOD"
+    - "SETUID"
+    - "SETGID"
+    exemptImages:
+    - "nginx:latest"
+
+K8sPSPForbiddenSysctls:
+  includeNamespaces:
+    - "default"
+    - "wowowowow"
+  excludeNamespaces:
+    - "aa"
+  scope: "Cluster"
+  parameters:
+    forbiddenSysctls:
+    - "*"
+
+K8sPSPFSGroup:
+  includeNamespaces:
+    - "default"
+    - "wowowowow"
+  excludeNamespaces:
+    - "aa"
+  scope: "Cluster"
+  parameters:
+    rule: "MustRunAs" #"MustRunAs", "MayRunAs", "RunAsAny"
+    ranges:
+    - min: 1001
+      max: 1003
+    - min: 1011
+      max: 1013
+
+K8sPSPHostFilesystem:
+  includeNamespaces:
+    - "default"
+    - "wowowowow"
+  excludeNamespaces:
+    - "aa"
+  scope: "Cluster"
+  parameters:
+    allowedHostPaths:
+    - readOnly: false
+      pathPrefix: "/foo"
+    - readOnly: true
+      pathPrefix: "/foox"
+
+K8sPSPHostNamespace:
+  includeNamespaces:
+    - "default"
+    - "wowowowow"
+  excludeNamespaces:
+    - "aa"
+
+K8sPSPHostNetworkingPorts:
+  includeNamespaces:
+    - "default"
+    - "wowowowow"
+  excludeNamespaces:
+    - "aa"
+  parameters:
+    hostNetwork: false
+    min: 80
+    max: 1000
+
+K8sPSPPrivilegedContainer:
+  excludeNamespaces:
+    - "kube-system"
+  parameters:
+    exemptImages:
+    - "calico"
+
+K8sPSPProcMount:
+  procMount: "Default"
+
+K8sPSPReadOnlyRootFilesystem:
+  includeNamespaces:
+  - "interestring"
+  parameters:
+    exemptImages:
+    - "wowow"
+
+K8sPSPVolumeTypes:
+  parameters:
+    volumes:
+      - configMap
+      - emptyDir
+      - projected
+      - secret
+      - downwardAPI
+      - persistentVolumeClaim
+      # - "*" # * may be used to allow all volume types
+      # - hostPath #required for allowedHostPaths
+      # - flexVolume #required for allowedFlexVolumes
+
+K8sPSPAllowedUsers:
+  parameters:
+    runAsUser:
+      rule: "MustRunAs"
+      ranges:
+      - min: 100
+        max: 200
+    runAsGroup:
+      rule: "MustRunAs"
+      ranges:
+      - min: 100
+        max: 200
+    supplementalGroups:
+      rule: "MustRunAs"
+      ranges:
+      - min: 100
+        max: 200
+    fsGroup:
+      rule: "MustRunAs"
+      ranges:
+      - min: 100
+        max: 200
+
+K8sAllowedRepos:
+  parameters:
+    repos: 
+     - "openpolicyagent/"
+
+K8sContainerLimits:
+  parameters:
+    cpu: 200m
+    memory: 1Gi
+
+K8sContainerRequests:
+  parameters:
+    cpu: "200m"
+    memory: "1Gi"
+
+K8sDisallowAnonymous:
+  parameters:
+    allowedRoles: 
+      - cluster-role-1
+
+K8sDisallowedTags:
+  parameters:
+    tags: "latest"
+    exemptImages: 
+     - "openpolicyagent/opa-exp:latest"
+     - "openpolicyagent/opa-exp2:latest"
+
+
+K8sExternalIPs:
+  parameters:
+    allowedIPs:
+      - "203.0.113.0"
+
+
+K8sPSPAutomountServiceAccountTokenPod:
+
+K8sBlockEndpointEditDefaultRole:
+
+K8sBlockNodePort:
+
+K8sBlockWildcardIngress:
+
+K8sHttpsOnly:
+
+K8sImageDigests:
+
+NoUpdateServiceAccount:
+
+K8sPodDisruptionBudget:
+
+K8sReplicaLimits:
+
+K8sRequiredAnnotations:
+
+K8sRequiredLabels:
+
+K8sRequiredProbes:
+
+K8sUniqueIngressHost:
+
+K8sUniqueServiceSelector:
+
