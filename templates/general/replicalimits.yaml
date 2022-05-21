@@ -1,0 +1,40 @@
+{{- if .Values.K8sReplicaLimits -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sReplicaLimits
+metadata:
+  name: replica-limits
+spec:
+  match:
+    kinds:
+      - apiGroups: ["apps"]
+        kinds: ["Deployment"]
+    {{- if or (.Values.K8sReplicaLimits.excludeNamespaces) (hasKey .Values.K8sReplicaLimits "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sReplicaLimits "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sReplicaLimits.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sReplicaLimits.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sReplicaLimits.scope}}
+    scope: 
+    {{.Values.K8sReplicaLimits.scope | quote -}}
+    {{ end }}
+  parameters:
+  {{- range .Values.K8sReplicaLimits.parameters.ranges}}
+    ranges:
+    - min_replicas: {{.min_replicas}}
+      max_replicas: {{.max_replicas}}
+  {{end -}}
+{{- end -}}

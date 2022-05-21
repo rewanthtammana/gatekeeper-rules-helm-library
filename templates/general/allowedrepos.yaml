@@ -1,0 +1,41 @@
+{{- if .Values.K8sAllowedRepos -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sAllowedRepos
+metadata:
+  name: repo-is-openpolicyagent
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaces:
+      - "default"
+    {{- if or (.Values.K8sPSPCapabilities.excludeNamespaces) (hasKey .Values.K8sAllowedRepos "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sAllowedRepos "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sAllowedRepos.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sAllowedRepos.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sAllowedRepos.scope}}
+    scope: 
+    {{.Values.K8sAllowedRepos.scope | quote -}}
+    {{ end }}
+  parameters:
+    repos: 
+    {{- range .Values.K8sAllowedRepos.parameters.repos}} 
+      - {{. | quote -}}
+    {{end -}}
+{{- end -}}

@@ -1,0 +1,36 @@
+{{- if .Values.K8sImageDigests -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sImageDigests
+metadata:
+  name: container-image-must-have-digest
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Pod"]
+    namespaces:
+      - "default"
+    {{- if or (.Values.K8sImageDigests.excludeNamespaces) (hasKey .Values.K8sImageDigests "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sImageDigests "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sImageDigests.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sImageDigests.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sImageDigests.scope}}
+    scope: 
+    {{.Values.K8sImageDigests.scope | quote -}}
+    {{end -}}
+{{- end -}}

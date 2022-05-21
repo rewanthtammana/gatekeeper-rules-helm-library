@@ -1,0 +1,34 @@
+{{- if .Values.K8sHttpsOnly -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sHttpsOnly
+metadata:
+  name: ingress-https-only
+spec:
+  match:
+    kinds:
+      - apiGroups: ["extensions", "networking.k8s.io"]
+        kinds: ["Ingress"]
+    {{- if or (.Values.K8sHttpsOnly.excludeNamespaces) (hasKey .Values.K8sHttpsOnly "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sHttpsOnly "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sHttpsOnly.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sHttpsOnly.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sHttpsOnly.scope}}
+    scope: 
+    {{.Values.K8sHttpsOnly.scope | quote -}}
+    {{end -}}
+{{- end -}}

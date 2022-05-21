@@ -1,31 +1,11 @@
-# Default values for helm-test.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 
 globalImport:
   includeNamespaces:
-    - "inamespace1"
-    - "inamespace2"
-    - "first"
-    - "second"
+    - "default"
   excludeNamespaces:
-    - "enamespace1"
-    - "enamespace2"
+    - "kube-system"
   includeNamespacesDefaultFlag: true
   excludeNamespacesDefaultFlag: false
-
-# Sample structure
-
-# K8sPSPAllowPrivilegeEscalationContainer:
-#   globalImport:
-#     includeNamespacesFlag: false (defaults true)
-#     excludeNamespacesFlag: false (defaults false)
-#   includeNamespaces:
-#     - "default"
-#     - "wowowowow"
-#   excludeNamespaces:
-#     - "aa"
-#   scope: "Cluster"
 
 
 K8sPSPAllowPrivilegeEscalationContainer:
@@ -33,9 +13,8 @@ K8sPSPAllowPrivilegeEscalationContainer:
   excludeGlobalNamespacesFlag: false
   includeNamespaces:
     - "default"
-    - "wowowowow"
   excludeNamespaces:
-    - "aa"
+    - "kube-system"
   scope: "Cluster"
 
 K8sPSPCapabilities:
@@ -43,9 +22,8 @@ K8sPSPCapabilities:
   excludeGlobalNamespacesFlag: true
   includeNamespaces:
     - "default"
-    - "wowowowow"
   excludeNamespaces:
-    - "aa"
+    - "kube-system"
   scope: "Cluster"
   parameters:
     allowedCapabilities:
@@ -59,22 +37,24 @@ K8sPSPCapabilities:
     - "nginx:latest"
 
 K8sPSPForbiddenSysctls:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
   includeNamespaces:
     - "default"
-    - "wowowowow"
   excludeNamespaces:
-    - "aa"
+    - "kube-system"
   scope: "Cluster"
   parameters:
     forbiddenSysctls:
     - "*"
 
 K8sPSPFSGroup:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
   includeNamespaces:
     - "default"
-    - "wowowowow"
   excludeNamespaces:
-    - "aa"
+    - "kube-system"
   scope: "Cluster"
   parameters:
     rule: "MustRunAs" #"MustRunAs", "MayRunAs", "RunAsAny"
@@ -85,11 +65,12 @@ K8sPSPFSGroup:
       max: 1013
 
 K8sPSPHostFilesystem:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
   includeNamespaces:
     - "default"
-    - "wowowowow"
   excludeNamespaces:
-    - "aa"
+    - "kube-system"
   scope: "Cluster"
   parameters:
     allowedHostPaths:
@@ -99,41 +80,63 @@ K8sPSPHostFilesystem:
       pathPrefix: "/foox"
 
 K8sPSPHostNamespace:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  scope: "Cluster"
   includeNamespaces:
     - "default"
-    - "wowowowow"
   excludeNamespaces:
-    - "aa"
+    - "kube-system"
 
 K8sPSPHostNetworkingPorts:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  scope: "Cluster"
   includeNamespaces:
     - "default"
-    - "wowowowow"
   excludeNamespaces:
-    - "aa"
+    - "kube-system"
   parameters:
     hostNetwork: false
     min: 80
     max: 1000
 
 K8sPSPPrivilegedContainer:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  scope: "Cluster"
+  includeNamespaces:
+    - "default"
   excludeNamespaces:
     - "kube-system"
   parameters:
     exemptImages:
-    - "calico"
+    - "nginx"
 
 K8sPSPProcMount:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  scope: "Cluster"
   procMount: "Default"
 
 K8sPSPReadOnlyRootFilesystem:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  scope: "Cluster"
   includeNamespaces:
-  - "interestring"
+    - "default"
   parameters:
     exemptImages:
-    - "wowow"
+    - "nginx"
 
 K8sPSPVolumeTypes:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  scope: "Cluster"
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
     volumes:
       - configMap
@@ -147,6 +150,13 @@ K8sPSPVolumeTypes:
       # - flexVolume #required for allowedFlexVolumes
 
 K8sPSPAllowedUsers:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  scope: "Cluster"
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
     runAsUser:
       rule: "MustRunAs"
@@ -170,64 +180,208 @@ K8sPSPAllowedUsers:
         max: 200
 
 K8sAllowedRepos:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
     repos: 
      - "openpolicyagent/"
 
 K8sContainerLimits:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
     cpu: 200m
     memory: 1Gi
 
+    
 K8sContainerRequests:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
     cpu: "200m"
     memory: "1Gi"
 
 K8sDisallowAnonymous:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
     allowedRoles: 
       - cluster-role-1
 
 K8sDisallowedTags:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
-    tags: "latest"
+    tags: 
+     - "latest"
+     - "hello"
     exemptImages: 
      - "openpolicyagent/opa-exp:latest"
      - "openpolicyagent/opa-exp2:latest"
 
 
 K8sExternalIPs:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
   parameters:
     allowedIPs:
       - "203.0.113.0"
 
-
-K8sPSPAutomountServiceAccountTokenPod:
-
-K8sBlockEndpointEditDefaultRole:
-
-K8sBlockNodePort:
-
-K8sBlockWildcardIngress:
-
-K8sHttpsOnly:
-
-K8sImageDigests:
-
-NoUpdateServiceAccount:
-
-K8sPodDisruptionBudget:
-
-K8sReplicaLimits:
-
-K8sRequiredAnnotations:
+K8sRequiredProbes:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+  parameters:
+    probes: ["readinessProbe", "livenessProbe"]
+    probeTypes: ["tcpSocket", "httpGet", "exec"]
 
 K8sRequiredLabels:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+  parameters:
+    labels: 
+      - key: owner
+        allowedRegex: "^[a-zA-Z]+.agilebank.demo$"
 
-K8sRequiredProbes:
+K8sRequiredAnnotations:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+  parameters:
+    message: "All services must have a `a8r.io/owner` and `a8r.io/runbook` annotations."
+    annotations:
+      - key: a8r.io/owner
+        # Matches email address or github user
+        allowedRegex: ^([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}|[a-z]{1,39})$
+      - key: a8r.io/runbook
+        # Matches urls including or not http/https
+        allowedRegex: ^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$
+     
+
+K8sReplicaLimits:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+  parameters:
+    ranges:
+    - min_replicas: 3
+      max_replicas: 50
+
+
+K8sPSPAutomountServiceAccountTokenPod:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+
+K8sBlockEndpointEditDefaultRole:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+
+K8sBlockNodePort:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+
+K8sBlockWildcardIngress:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+
+K8sHttpsOnly:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+
+K8sImageDigests:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+
+NoUpdateServiceAccount:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
+
+K8sPodDisruptionBudget:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
 
 K8sUniqueIngressHost:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
 
 K8sUniqueServiceSelector:
+  includeNamespacesDefaultFlag: true
+  excludeNamespacesDefaultFlag: false
+  includeNamespaces:
+    - "default"
+  excludeNamespaces:
+     - "kube-system"
 

@@ -1,0 +1,42 @@
+{{- if .Values.K8sRequiredAnnotations -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredAnnotations
+metadata:
+  name: all-must-have-certain-set-of-annotations
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Service"]
+    {{- if or (.Values.K8sRequiredAnnotations.excludeNamespaces) (hasKey .Values.K8sRequiredAnnotations "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sRequiredAnnotations "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sRequiredAnnotations.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sRequiredAnnotations.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sRequiredAnnotations.scope}}
+    scope: 
+    {{.Values.K8sRequiredAnnotations.scope | quote -}}
+    {{ end }}
+  parameters:
+    message: {{.Values.K8sRequiredAnnotations.parameters.message}}
+    annotations:
+    {{- range .Values.K8sRequiredAnnotations.parameters.annotations}}
+      - key: {{.key}}
+        # Matches email address or github user
+        allowedRegex: {{.allowedRegex}}
+  {{end -}}
+{{- end -}}

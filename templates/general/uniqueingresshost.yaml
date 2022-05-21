@@ -1,0 +1,34 @@
+{{- if .Values.K8sUniqueIngressHost -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sUniqueIngressHost
+metadata:
+  name: unique-ingress-host
+spec:
+  match:
+    kinds:
+      - apiGroups: ["extensions", "networking.k8s.io"]
+        kinds: ["Ingress"]
+    {{- if or (.Values.K8sUniqueIngressHost.excludeNamespaces) (hasKey .Values.K8sUniqueIngressHost "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sUniqueIngressHost "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sUniqueIngressHost.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sUniqueIngressHost.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sUniqueIngressHost.scope}}
+    scope: 
+    {{.Values.K8sUniqueIngressHost.scope | quote -}}
+    {{end -}}
+{{- end -}}

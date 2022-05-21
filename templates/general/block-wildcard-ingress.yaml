@@ -1,0 +1,34 @@
+{{- if .Values.K8sBlockWildcardIngress -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sBlockWildcardIngress
+metadata:
+  name: block-wildcard-ingress
+spec:
+  match:
+    kinds:
+      - apiGroups: ["extensions", "networking.k8s.io"]
+        kinds: ["Ingress"]
+    {{- if or (.Values.K8sBlockWildcardIngress.excludeNamespaces) (hasKey .Values.K8sBlockWildcardIngress "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sBlockWildcardIngress "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sBlockWildcardIngress.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sBlockWildcardIngress.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sBlockWildcardIngress.scope}}
+    scope: 
+    {{.Values.K8sBlockWildcardIngress.scope | quote -}}
+    {{end -}}
+{{- end -}}

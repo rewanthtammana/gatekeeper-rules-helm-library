@@ -1,0 +1,34 @@
+{{- if .Values.K8sBlockNodePort -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sBlockNodePort
+metadata:
+  name: block-node-port
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Service"]
+    {{- if or (.Values.K8sBlockNodePort.excludeNamespaces) (hasKey .Values.K8sBlockNodePort "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sBlockNodePort "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sBlockNodePort.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sBlockNodePort.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sBlockNodePort.scope}}
+    scope: 
+    {{.Values.K8sBlockNodePort.scope | quote -}}
+    {{end -}}
+{{- end -}}

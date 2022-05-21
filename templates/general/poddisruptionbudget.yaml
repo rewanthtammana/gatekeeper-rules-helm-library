@@ -1,0 +1,38 @@
+{{- if .Values.K8sPodDisruptionBudget -}}
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPodDisruptionBudget
+metadata:
+  name: pod-distruption-budget
+spec:
+  match:
+    kinds:
+      - apiGroups: ["apps"]
+        kinds: ["Deployment", "ReplicaSet", "StatefulSet"]
+      - apiGroups: ["policy"]
+        kinds: ["PodDisruptionBudget"]
+      - apiGroups: [""]
+        kinds: ["ReplicationController"]
+    {{- if or (.Values.K8sPodDisruptionBudget.excludeNamespaces) (hasKey .Values.K8sPodDisruptionBudget "excludeGlobalNamespacesFlag")}}
+    excludedNamespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPodDisruptionBudget "excludeGlobalNamespacesFlag"}}
+    {{- if .Values.K8sPodDisruptionBudget.excludeGlobalNamespacesFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.excludeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPodDisruptionBudget.excludeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
+    {{- if .Values.K8sPodDisruptionBudget.scope}}
+    scope: 
+    {{.Values.K8sPodDisruptionBudget.scope | quote -}}
+    {{end -}}
+{{- end -}}
