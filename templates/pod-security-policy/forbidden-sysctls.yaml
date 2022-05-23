@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sPSPForbiddenSysctls
 metadata:
-  name: psp-forbidden-sysctls
+  name: psp-forbidden-sysctls-{{.Release.Name}}
 spec:
   match:
     kinds:

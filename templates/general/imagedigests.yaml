@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sImageDigests
 metadata:
-  name: container-image-must-have-digest
+  name: container-image-must-have-digest-{{.Release.Name}}
 spec:
   match:
     kinds:

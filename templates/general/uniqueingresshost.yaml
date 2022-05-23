@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sUniqueIngressHost
 metadata:
-  name: unique-ingress-host
+  name: unique-ingress-host-{{.Release.Name}}
 spec:
   match:
     kinds:

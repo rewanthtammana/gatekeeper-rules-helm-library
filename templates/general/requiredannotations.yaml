@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sRequiredAnnotations
 metadata:
-  name: all-must-have-certain-set-of-annotations
+  name: all-must-have-certain-set-of-annotations-{{.Release.Name}}
 spec:
   match:
     kinds:

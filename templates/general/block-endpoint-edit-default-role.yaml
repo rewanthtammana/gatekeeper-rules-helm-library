@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sBlockEndpointEditDefaultRole
 metadata:
-  name: block-endpoint-edit-default-role
+  name: block-endpoint-edit-default-role-{{.Release.Name}}
 spec:
   match:
     kinds:

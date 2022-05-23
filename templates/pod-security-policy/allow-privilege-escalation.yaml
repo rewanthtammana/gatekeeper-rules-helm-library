@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sPSPAllowPrivilegeEscalationContainer
 metadata:
-  name: psp-allow-privilege-escalation-containers
+  name: psp-allow-privilege-escalation-containers-{{.Release.Name}}
 spec:
   match:
     kinds:
@@ -30,7 +30,7 @@ spec:
     {{end -}}
     {{end -}}
     {{/* Check if excludeNamespaces are defined */ -}}
-    {{- if or (.Values.K8sPSPCapabilities.excludeNamespaces) (hasKey .Values.K8sPSPCapabilities "excludeGlobalNamespacesFlag")}}
+    {{- if or (.Values.K8sPSPAllowPrivilegeEscalationContainer.excludeNamespaces) (hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
     {{- if hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "excludeGlobalNamespacesFlag"}}

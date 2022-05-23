@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sContainerLimits
 metadata:
-  name: container-must-have-limits
+  name: container-must-have-limits-{{.Release.Name}}
 spec:
   match:
     kinds:

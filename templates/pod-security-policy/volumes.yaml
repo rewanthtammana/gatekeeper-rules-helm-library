@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sPSPVolumeTypes
 metadata:
-  name: psp-volume-types
+  name: psp-volume-types-{{.Release.Name}}
 spec:
   match:
     kinds:

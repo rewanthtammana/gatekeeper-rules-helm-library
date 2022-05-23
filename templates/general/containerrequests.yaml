@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sContainerRequests
 metadata:
-  name: container-must-have-requests
+  name: container-must-have-requests-{{.Release.Name}}
 spec:
   match:
     kinds:

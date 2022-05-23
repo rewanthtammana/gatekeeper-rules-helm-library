@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sPSPHostFilesystem
 metadata:
-  name: psp-host-filesystem
+  name: psp-host-filesystem-{{.Release.Name}}
 spec:
   match:
     kinds:

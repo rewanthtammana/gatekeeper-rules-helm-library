@@ -2,7 +2,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sDisallowedTags
 metadata:
-  name: container-image-must-not-have-latest-tag
+  name: container-image-must-not-have-latest-tag-{{.Release.Name}}
 spec:
   match:
     kinds:
