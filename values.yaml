@@ -7,10 +7,9 @@ globalImport:
   includeNamespacesDefaultFlag: true
   excludeNamespacesDefaultFlag: false
 
-
 K8sPSPAllowPrivilegeEscalationContainer:
-  includeGlobalNamespacesFlag: false
-  excludeGlobalNamespacesFlag: false
+  includeNamespacesDefaultFlag: false
+  excludeNamespacesDefaultFlag: false
   includeNamespaces:
     - "default"
   excludeNamespaces:
@@ -18,8 +17,8 @@ K8sPSPAllowPrivilegeEscalationContainer:
   scope: "Cluster"
 
 K8sPSPCapabilities:
-  includeGlobalNamespacesFlag: false
-  excludeGlobalNamespacesFlag: true
+  includeNamespacesDefaultFlag: false
+  excludeNamespacesDefaultFlag: true
   includeNamespaces:
     - "default"
   excludeNamespaces:

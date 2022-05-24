@@ -10,12 +10,12 @@ spec:
         kinds: ["Pod"]
     {{- /* Check if any custom values are defined */ -}}
     {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer}}
-    {{- if or (.Values.K8sPSPAllowPrivilegeEscalationContainer.includeNamespaces) (hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "includeGlobalNamespacesFlag")}}
+    {{- if or (.Values.K8sPSPAllowPrivilegeEscalationContainer.includeNamespaces) (hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "includeNamespacesDefaultFlag")}}
     {{/* Check if any specific namespaces are defined */ -}}
     namespaces:
     {{- /* Check for globalimport include */ -}}
-    {{- if hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "includeGlobalNamespacesFlag"}}
-    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer.includeGlobalNamespacesFlag}}
+    {{- if hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer.includeNamespacesDefaultFlag}}
     {{- range .Values.globalImport.includeNamespaces}}
       - {{. | quote -}}
     {{end -}}
@@ -30,11 +30,11 @@ spec:
     {{end -}}
     {{end -}}
     {{/* Check if excludeNamespaces are defined */ -}}
-    {{- if or (.Values.K8sPSPAllowPrivilegeEscalationContainer.excludeNamespaces) (hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "excludeGlobalNamespacesFlag")}}
+    {{- if or (.Values.K8sPSPAllowPrivilegeEscalationContainer.excludeNamespaces) (hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "excludeNamespacesDefaultFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
-    {{- if hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "excludeGlobalNamespacesFlag"}}
-    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer.excludeGlobalNamespacesFlag}}
+    {{- if hasKey .Values.K8sPSPAllowPrivilegeEscalationContainer "excludeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sPSPAllowPrivilegeEscalationContainer.excludeNamespacesDefaultFlag}}
     {{- range .Values.globalImport.excludeNamespaces}}
       - {{. | quote -}}
     {{end -}}

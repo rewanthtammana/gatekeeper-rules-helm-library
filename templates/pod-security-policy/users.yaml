@@ -10,12 +10,12 @@ spec:
         kinds: ["Pod"]
     {{- /* Check if any custom values are defined */ -}}
     {{- if .Values.K8sPSPAllowedUsers}}
-    {{- if or (.Values.K8sPSPAllowedUsers.includeNamespaces) (hasKey .Values.K8sPSPAllowedUsers "includeGlobalNamespacesFlag")}}
+    {{- if or (.Values.K8sPSPAllowedUsers.includeNamespaces) (hasKey .Values.K8sPSPAllowedUsers "includeNamespacesDefaultFlag")}}
     {{/* Check if any specific namespaces are defined */ -}}
     namespaces:
     {{- /* Check for globalimport include */ -}}
-    {{- if hasKey .Values.K8sPSPAllowedUsers "includeGlobalNamespacesFlag"}}
-    {{- if .Values.K8sPSPAllowedUsers.includeGlobalNamespacesFlag}}
+    {{- if hasKey .Values.K8sPSPAllowedUsers "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sPSPAllowedUsers.includeNamespacesDefaultFlag}}
     {{- range .Values.globalImport.includeNamespaces}}
       - {{. | quote -}}
     {{end -}}
@@ -30,11 +30,11 @@ spec:
     {{end -}}
     {{end -}}
     {{/* Check if excludeNamespaces are defined */ -}}
-    {{- if or (.Values.K8sPSPAllowedUsers.excludeNamespaces) (hasKey .Values.K8sPSPAllowedUsers "excludeGlobalNamespacesFlag")}}
+    {{- if or (.Values.K8sPSPAllowedUsers.excludeNamespaces) (hasKey .Values.K8sPSPAllowedUsers "excludeNamespacesDefaultFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
-    {{- if hasKey .Values.K8sPSPAllowedUsers "excludeGlobalNamespacesFlag"}}
-    {{- if .Values.K8sPSPAllowedUsers.excludeGlobalNamespacesFlag}}
+    {{- if hasKey .Values.K8sPSPAllowedUsers "excludeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sPSPAllowedUsers.excludeNamespacesDefaultFlag}}
     {{- range .Values.globalImport.excludeNamespaces}}
       - {{. | quote -}}
     {{end -}}
