@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: ["extensions", "networking.k8s.io"]
         kinds: ["Ingress"]
+    {{- if or (.Values.K8sUniqueIngressHost.includeNamespaces) (hasKey .Values.K8sUniqueIngressHost "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sUniqueIngressHost "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sUniqueIngressHost.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sUniqueIngressHost.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sUniqueIngressHost.excludeNamespaces) (hasKey .Values.K8sUniqueIngressHost "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,7 +47,6 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sUniqueIngressHost.scope}}
-    scope: 
-    {{.Values.K8sUniqueIngressHost.scope | quote -}}
+    scope: {{.Values.K8sUniqueIngressHost.scope | quote -}}
     {{end -}}
 {{- end -}}

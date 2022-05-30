@@ -8,8 +8,25 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
+    {{- if or (.Values.K8sImageDigests.includeNamespaces) (hasKey .Values.K8sImageDigests "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
     namespaces:
-      - "default"
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sImageDigests "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sImageDigests.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sImageDigests.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sImageDigests.excludeNamespaces) (hasKey .Values.K8sImageDigests "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -30,7 +47,6 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sImageDigests.scope}}
-    scope: 
-    {{.Values.K8sImageDigests.scope | quote -}}
+    scope: {{.Values.K8sImageDigests.scope | quote -}}
     {{end -}}
 {{- end -}}

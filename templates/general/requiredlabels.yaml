@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Namespace"]
+    {{- if or (.Values.K8sRequiredLabels.includeNamespaces) (hasKey .Values.K8sRequiredLabels "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sRequiredLabels "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sRequiredLabels.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sRequiredLabels.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sRequiredLabels.excludeNamespaces) (hasKey .Values.K8sRequiredLabels "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,8 +47,7 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sRequiredLabels.scope}}
-    scope: 
-    {{.Values.K8sRequiredLabels.scope | quote -}}
+    scope: {{.Values.K8sRequiredLabels.scope | quote -}}
     {{ end }}
   parameters:
     message: "All namespaces must have an `owner` label that points to your company username"

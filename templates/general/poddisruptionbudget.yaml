@@ -12,6 +12,25 @@ spec:
         kinds: ["PodDisruptionBudget"]
       - apiGroups: [""]
         kinds: ["ReplicationController"]
+    {{- if or (.Values.K8sPodDisruptionBudget.includeNamespaces) (hasKey .Values.K8sPodDisruptionBudget "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sPodDisruptionBudget "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sPodDisruptionBudget.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sPodDisruptionBudget.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sPodDisruptionBudget.excludeNamespaces) (hasKey .Values.K8sPodDisruptionBudget "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -32,7 +51,6 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sPodDisruptionBudget.scope}}
-    scope: 
-    {{.Values.K8sPodDisruptionBudget.scope | quote -}}
+    scope: {{.Values.K8sPodDisruptionBudget.scope | quote -}}
     {{end -}}
 {{- end -}}

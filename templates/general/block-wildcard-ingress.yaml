@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: ["extensions", "networking.k8s.io"]
         kinds: ["Ingress"]
+    {{- if or (.Values.K8sBlockWildcardIngress.includeNamespaces) (hasKey .Values.K8sBlockWildcardIngress "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sBlockWildcardIngress "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sBlockWildcardIngress.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sBlockWildcardIngress.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sBlockWildcardIngress.excludeNamespaces) (hasKey .Values.K8sBlockWildcardIngress "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,7 +47,6 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sBlockWildcardIngress.scope}}
-    scope: 
-    {{.Values.K8sBlockWildcardIngress.scope | quote -}}
+    scope: {{.Values.K8sBlockWildcardIngress.scope | quote -}}
     {{end -}}
 {{- end -}}

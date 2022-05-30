@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
+    {{- if or (.Values.K8sContainerLimits.includeNamespaces) (hasKey .Values.K8sContainerLimits "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sContainerLimits "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sContainerLimits.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sContainerLimits.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sContainerLimits.excludeNamespaces) (hasKey .Values.K8sContainerLimits "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,8 +47,7 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sContainerLimits.scope}}
-    scope: 
-    {{.Values.K8sContainerLimits.scope | quote -}}
+    scope: {{.Values.K8sContainerLimits.scope | quote -}}
     {{ end }}
   parameters:
     cpu: {{.Values.K8sContainerLimits.parameters.cpu}}

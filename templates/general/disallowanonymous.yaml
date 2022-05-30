@@ -10,6 +10,25 @@ spec:
         kinds: ["ClusterRoleBinding"]
       - apiGroups: ["rbac.authorization.k8s.io"]
         kinds: ["RoleBinding"]
+    {{- if or (.Values.K8sDisallowAnonymous.includeNamespaces) (hasKey .Values.K8sDisallowAnonymous "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sDisallowAnonymous "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sDisallowAnonymous.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sDisallowAnonymous.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sDisallowAnonymous.excludeNamespaces) (hasKey .Values.K8sDisallowAnonymous "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -30,8 +49,7 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sDisallowAnonymous.scope}}
-    scope: 
-    {{.Values.K8sDisallowAnonymous.scope | quote -}}
+    scope: {{.Values.K8sDisallowAnonymous.scope | quote -}}
     {{ end }}
   parameters: 
      allowedRoles:

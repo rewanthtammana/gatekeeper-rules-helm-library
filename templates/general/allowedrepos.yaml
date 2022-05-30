@@ -8,9 +8,26 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
+    {{- if or (.Values.K8sAllowedRepos.includeNamespaces) (hasKey .Values.K8sAllowedRepos "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
     namespaces:
-      - "default"
-    {{- if or (.Values.K8sPSPCapabilities.excludeNamespaces) (hasKey .Values.K8sAllowedRepos "excludeGlobalNamespacesFlag")}}
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sAllowedRepos "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sAllowedRepos.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sAllowedRepos.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- if or (.Values.K8sAllowedRepos.excludeNamespaces) (hasKey .Values.K8sAllowedRepos "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
     {{- if hasKey .Values.K8sAllowedRepos "excludeGlobalNamespacesFlag"}}
@@ -30,8 +47,7 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sAllowedRepos.scope}}
-    scope: 
-    {{.Values.K8sAllowedRepos.scope | quote -}}
+    scope: {{.Values.K8sAllowedRepos.scope | quote -}}
     {{ end }}
   parameters:
     repos: 

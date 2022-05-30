@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Service"]
+    {{- if or (.Values.K8sBlockNodePort.includeNamespaces) (hasKey .Values.K8sBlockNodePort "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sBlockNodePort "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sBlockNodePort.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sBlockNodePort.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sBlockNodePort.excludeNamespaces) (hasKey .Values.K8sBlockNodePort "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,7 +47,6 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sBlockNodePort.scope}}
-    scope: 
-    {{.Values.K8sBlockNodePort.scope | quote -}}
+    scope: {{.Values.K8sBlockNodePort.scope | quote -}}
     {{end -}}
 {{- end -}}

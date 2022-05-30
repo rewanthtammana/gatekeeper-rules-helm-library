@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: ["rbac.authorization.k8s.io"]
         kinds: ["ClusterRole"]
+    {{- if or (.Values.K8sBlockEndpointEditDefaultRole.includeNamespaces) (hasKey .Values.K8sBlockEndpointEditDefaultRole "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sBlockEndpointEditDefaultRole "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sBlockEndpointEditDefaultRole.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sBlockEndpointEditDefaultRole.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sBlockEndpointEditDefaultRole.excludeNamespaces) (hasKey .Values.K8sBlockEndpointEditDefaultRole "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,7 +47,6 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sBlockEndpointEditDefaultRole.scope}}
-    scope: 
-    {{.Values.K8sBlockEndpointEditDefaultRole.scope | quote -}}
+    scope: {{.Values.K8sBlockEndpointEditDefaultRole.scope | quote -}}
     {{end -}}
 {{- end -}}

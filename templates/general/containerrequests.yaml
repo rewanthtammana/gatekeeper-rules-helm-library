@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Pod"]
+    {{- if or (.Values.K8sContainerRequests.includeNamespaces) (hasKey .Values.K8sContainerRequests "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sContainerRequests "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sContainerRequests.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sContainerRequests.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sContainerRequests.excludeNamespaces) (hasKey .Values.K8sContainerRequests "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,10 +47,9 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sContainerRequests.scope}}
-    scope: 
-    {{.Values.K8sContainerRequests.scope | quote -}}
+    scope: {{.Values.K8sContainerRequests.scope | quote -}}
     {{ end }}
   parameters:
-    cpu: {{- .Values.K8sContainerRequests.parameters.cpu}}
-    memory: {{- .Values.K8sContainerRequests.parameters.memory -}}
+    cpu: {{ .Values.K8sContainerRequests.parameters.cpu | quote}}
+    memory: {{ .Values.K8sContainerRequests.parameters.memory | quote}}
 {{- end -}}

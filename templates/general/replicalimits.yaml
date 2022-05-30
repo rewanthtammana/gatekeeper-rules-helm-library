@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
+    {{- if or (.Values.K8sReplicaLimits.includeNamespaces) (hasKey .Values.K8sReplicaLimits "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sReplicaLimits "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sReplicaLimits.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sReplicaLimits.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sReplicaLimits.excludeNamespaces) (hasKey .Values.K8sReplicaLimits "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,8 +47,7 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sReplicaLimits.scope}}
-    scope: 
-    {{.Values.K8sReplicaLimits.scope | quote -}}
+    scope: {{.Values.K8sReplicaLimits.scope | quote -}}
     {{ end }}
   parameters:
   {{- range .Values.K8sReplicaLimits.parameters.ranges}}

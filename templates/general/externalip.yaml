@@ -8,6 +8,25 @@ spec:
     kinds:
       - apiGroups: [""]
         kinds: ["Service"]
+    {{- if or (.Values.K8sExternalIPs.includeNamespaces) (hasKey .Values.K8sExternalIPs "includeNamespacesDefaultFlag")}}
+    {{/* Check if any specific namespaces are defined */ -}}
+    namespaces:
+    {{- /* Check for globalimport include */ -}}
+    {{- if hasKey .Values.K8sExternalIPs "includeNamespacesDefaultFlag"}}
+    {{- if .Values.K8sExternalIPs.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- else if .Values.globalImport.includeNamespacesDefaultFlag}}
+    {{- range .Values.globalImport.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
+    {{- range .Values.K8sExternalIPs.includeNamespaces}}
+      - {{. | quote -}}
+    {{end -}}
+    {{end -}}
     {{- if or (.Values.K8sExternalIPs.excludeNamespaces) (hasKey .Values.K8sExternalIPs "excludeGlobalNamespacesFlag")}}
     excludedNamespaces:
     {{- /* Check for globalimport include */ -}}
@@ -28,8 +47,7 @@ spec:
     {{end -}}
     {{/* Check if any scope is defined (Cluster/Namespace) */ -}}
     {{- if .Values.K8sExternalIPs.scope}}
-    scope: 
-    {{.Values.K8sExternalIPs.scope | quote -}}
+    scope: {{.Values.K8sExternalIPs.scope | quote -}}
     {{ end }}
   parameters:
     allowedIPs:
