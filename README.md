@@ -42,4 +42,5 @@ Edit the `values.yaml` file to pick the resources of your choice & customize the
 ## Authors
 
 [Rewanth Tammana](https://www.linkedin.com/in/rewanthtammana/)
+
 [Siddharth Tanna](https://www.linkedin.com/in/siddharthtanna/)
