@@ -39,3 +39,7 @@ All the templates are created in the format of `$TEMPLATENAME-$HELMRELEASENAME`.
 
 Edit the `values.yaml` file to pick the resources of your choice & customize them with ease.
 
+## Authors
+
+[Rewanth Tammana](https://www.linkedin.com/in/rewanthtammana/)
+[Siddharth Tanna](https://www.linkedin.com/in/siddharthtanna/)
